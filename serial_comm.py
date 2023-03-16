@@ -2,7 +2,6 @@ import serial
 import serial.tools.list_ports
 import time
 
-'''Preimenuj file v nekaj bolj primernega'''
 
 # E201 Encoder interface:
 # https://www.rls.si/eng/fileuploader/download/download/?d=1&file=custom%2Fupload%2FE201D01_07_bookmark.pdf
