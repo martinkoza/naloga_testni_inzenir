@@ -6,7 +6,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.express as px
 
-import read_position
+import serial_comm
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 data = {
@@ -36,7 +36,7 @@ app.layout = html.Div(
 def update_graph_live(n):
     global data
     # Collect some data
-    pos_deg = read_position.read_position_deg(ser)
+    pos_deg = serial_comm.read_position_deg(ser)
     print(f'Pos_deg: {pos_deg} = {pos_deg != 0}')
     if pos_deg != 0:
         delta_time = datetime.timedelta(seconds=1)
@@ -51,5 +51,5 @@ def update_graph_live(n):
 
 
 if __name__ == '__main__':
-    ser = read_position.serial_init()
+    ser = serial_comm.serial_init()
     app.run(debug=True, dev_tools_ui=True, dev_tools_props_check=True)
