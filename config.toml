@@ -1,0 +1,127 @@
+[interface]
+name = 'E201 USB Encoder Interface'
+data_sheet = 'https://www.rls.si/eng/fileuploader/download/download/?d=1&file=custom%2Fupload%2FE201D01_07_bookmark.pdf'
+VID = '0483'
+PID = '5740'
+
+
+[encoder]
+RESOLUTION = '2**20'
+CRC_FORMAT = 'C22:00:20:1:1'
+
+
+[[direct_access_registers]]
+address = ['0x40']
+data_type = 'U8'
+access = 'RW'
+default_value = '0'
+description = 'Bank select'
+
+[[direct_access_registers]]
+address = ['0x41']
+data_type = 'U8'
+access = 'R'
+default_value = '0'
+description = 'EDS bank'
+
+[[direct_access_registers]]
+address = ['0x42', '0x43']
+data_type = 'U16'
+access = 'R'
+default_value = '0x6216'
+description = 'Profile ID (table b - BP_ID)'
+
+[[direct_access_registers]]
+address = ['0x44', '0x45', '0x46', '0x47']
+data_type = 'U32'
+access = 'R'
+default_value = 'None'  # Številka ni bila podana
+description = 'Serial number (encoded)'
+
+[[direct_access_registers]]
+address = ['0x48']
+data_type = 'U8'
+access = 'RW'
+default_value = '255'
+description = 'Key register'
+
+[[direct_access_registers]]
+address = ['0x49']
+data_type = 'U8'
+access = 'RW'
+default_value = '255'
+description = 'Command register'
+
+[[direct_access_registers]]
+address = ['0x4A', '0x4B', '0x4C', '0x4D']
+data_type = 'U32'
+access = 'R'
+default_value = '0'
+description = 'Encoder detailed status (see chapter "Encoder operating parameters")'
+
+[[direct_access_registers]]
+address = ['0x4E', '0x4F']
+data_type = 'S16'
+access = 'R'
+default_value = 'None' # Parameter value changes during operation.
+description = 'Sensor temperature in °C'
+
+[[direct_access_registers]]
+address = ['0x50', '0x51', '0x52', '0x53']
+data_type = 'U32'
+access = 'R'
+default_value = 'None' # Parameter value changes during operation.
+description = 'Signal level'
+
+[[direct_access_registers]]
+address = ['0x54', '0x55', '0x56', '0x57']
+data_type = 'S32'
+access = 'R'
+default_value = 'None' # Parameter value changes during operation.
+description = 'Measured velocity in 0.1 RPM'
+
+[[direct_access_registers]]
+address = ['0x58', '0x59', '0x5A', '0x5B']
+data_type = 'U32'
+access = 'R'
+default_value = '0'
+description = 'Persistent detailed status'
+
+[[direct_access_registers]]
+address = ['0x5C']
+data_type = 'U8'
+access = 'R'
+default_value = '0'
+description = 'Parameter access status register - table D'
+
+[[direct_access_registers]]
+address = ['0x5D', '0x5E', '0x5F', '0x60', '0x61', '0x62', '0x63', '0x64', '0x65', '0x66', '0x67', '0x68', '0x69',
+           '0x6A', '0x6B', '0x6C', '0x6D', '0x6E', '0x6F', '0x70', '0x71', '0x72', '0x73']
+data_type = 'U8'
+access = 'R'
+default_value = '0'
+description = 'Reserved'
+
+[[direct_access_registers]]
+address = ['0x74', '0x75', '0x76', '0x77']
+data_type = 'U32'
+access = 'R'
+default_value = '0x04'
+description = 'Major FW version'
+
+[[direct_access_registers]]
+address = ['0x78', '0x79', '0x7A', '0x7B', '0x7C', '0x7D']
+data_type = 'U8'
+access = 'R'
+default_value = 'None'  # Številka ni bila podana
+description = 'Device ID'
+
+
+[[direct_access_registers]]
+address = ['0x7E', '0x7F']
+data_type = 'U16'
+access = 'R'
+default_value = '0x5253'
+description = 'Manufacturer ID'
+
+
