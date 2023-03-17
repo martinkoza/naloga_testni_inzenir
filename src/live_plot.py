@@ -4,8 +4,18 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.express as px
+import serial.tools.list_ports
 
-import serial_comm
+# import serial_comm
+
+import serial
+
+try:
+    ser.isOpen()
+except NameError:
+    ports_list = list(serial.tools.list_ports.comports())
+    ser = serial.Serial(ports_list[0].device, baudrate=9600, timeout=5, write_timeout=5)  # open serial port
+# TODO: Port error!
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 data = {
@@ -22,7 +32,7 @@ app.layout = html.Div(
         dcc.Graph(id='live-update-graph'),
         dcc.Interval(
             id='interval-component',
-            interval=400, # in milliseconds
+            interval=400,  # in milliseconds
             n_intervals=0
         )
     ])
@@ -50,5 +60,14 @@ def update_graph_live(n):
 
 
 if __name__ == '__main__':
-    ser = serial_comm.serial_init()
-    app.run(debug=True, dev_tools_ui=True, dev_tools_props_check=True)
+    # try:
+    #     ser.isOpen()
+    # except NameError:
+    #     config = serial_comm.load_config('config.toml')
+    #     ser = serial      _comm.serial_init(config)
+    app.run_server(debug=True)
+    # try:
+    #     app.run(debug=True, dev_tools_ui=True, dev_tools_props_check=True)
+    # finally:
+    #     ser.close()
+    #     print('Port closed')

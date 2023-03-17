@@ -1,7 +1,16 @@
 --------------------------------------------------------------
-[MCP02_01(app_note_BiSS).pdf - AksIM-4 BiSS C Register Access]
+TODO
 --------------------------------------------------------------
 
+#. Popravi probleme s src in lokacijami poti
+#. Preveri a dela live_plot.py
+#. Poglej si izračun CRC polinoma 0x43 6bit in naredi test za preverjanje pravilnega izračuna
+#. Testiraj pravilno delovanje warning in error LED in zastavic.
+
+
+--------------------------------------------------------------
+[MCP02_01(app_note_BiSS).pdf - AksIM-4 BiSS C Register Access]
+--------------------------------------------------------------
 
 #. Naslovi registrov Sensor temperature in C, Signal level in Measured velocity in 0.1 RPM v dokumentaciji niso skladni:
 
@@ -19,7 +28,6 @@
 Naloga_testni_inzenir_2.pdf
 --------------------------------------------------------------
 
-
 #. Naloga 1:
 
     3.c: Piše naj so testi avtomatski, kar je mogoče malo zavajujoče, ker je v **Test branja pozicije** potrebno enkoder zavrteti, torej je test pol-avtomatski?
@@ -32,3 +40,12 @@ Naloga_testni_inzenir_2.pdf
     * V čem se razlikujeta ukaza *X* in *Y*? Ni mi čisto jasno kaj točno naredita...
 
     * Mogoče bi bilo bolje dodati "Nujno pošljite ta ukaz v primeru, da hočete po prej omenjenih ukazih uporabljati *Control communication* ukaze.", ki se nahaja pri opisu ukaza *Sb* v tabelo *Control Communication*. Sem kar nekaj časa iskal, zakaj ne dobim odgovora pri uporabi ukazov, preden sem pogruntal, da je potrebno resetirati format.
+
+    * Pri branju registrov, ki niso 'RW' je odgovor 'Error'. Glede na opis komand (vrstica *3) sklepam, da bi moral biti odgovor 1
+
+
+#. Testiranje Direct access registrov:
+
+    * serijska številka ni bila podana (Direct access register 0x44 - 0x47)
+
+    * Decice ID ni bil podan
