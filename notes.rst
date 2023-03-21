@@ -3,9 +3,15 @@ TODO
 --------------------------------------------------------------
 
 #. Popravi probleme s src in lokacijami poti
-#. Preveri a dela live_plot.py
 #. Poglej si izračun CRC polinoma 0x43 6bit in naredi test za preverjanje pravilnega izračuna
+    #. deljena funkcija - zakaj je polinom 0x143 in ne 0x43?
+    #. v dokumentaciji piše da imamo 0x21 polinom?
+    #. kako sploh dobiti crc ostanek pri napaki iz enkoderja?
 #. Testiraj pravilno delovanje warning in error LED in zastavic.
+    #. ali je bug da ne dela oranžna lučka ali nisem pravilno pomeril
+    #. kaj naj bi predstavljalo utripanje obeh lučk hkrati (oranžno??)
+    #. ko sveti rdeča lučka (tri kratki dva dolga utripa) so e+w+crc 0:0:0, ST predstavlja error - kateri???
+    #. ko utripata obe lučki hkrati je odgovor ST pozicija:1:1
 
 
 --------------------------------------------------------------
@@ -48,4 +54,4 @@ Naloga_testni_inzenir_2.pdf
 
     * serijska številka ni bila podana (Direct access register 0x44 - 0x47)
 
-    * Decice ID ni bil podan
+    * Device ID ni bil podan
