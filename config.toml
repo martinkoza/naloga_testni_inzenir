@@ -6,7 +6,7 @@ PID = '5740'
 
 
 [encoder]
-RESOLUTION = '2**20'
+RESOLUTION = '0x100000' # 2**20
 CRC_FORMAT = 'C22:00:20:1:1'
 
 
