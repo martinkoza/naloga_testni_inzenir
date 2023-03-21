@@ -9,13 +9,10 @@ import serial.tools.list_ports
 # import serial_comm
 
 import serial
+import serial_comm
 
-try:
-    ser.isOpen()
-except NameError:
-    ports_list = list(serial.tools.list_ports.comports())
-    ser = serial.Serial(ports_list[0].device, baudrate=9600, timeout=5, write_timeout=5)  # open serial port
-# TODO: Port error!
+
+# TODO: Port error! - doma dela
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 data = {
@@ -45,7 +42,7 @@ app.layout = html.Div(
 def update_graph_live(n):
     global data
     # Collect some data
-    pos_deg = serial_comm.read_position_deg(ser)
+    pos_deg = serial_comm.read_position_deg(ser, int(config['encoder']['RESOLUTION'], 16))
     print(f'Pos_deg: {pos_deg} = {pos_deg != 0}')
     if pos_deg != 0:
         delta_time = datetime.timedelta(seconds=1)
@@ -60,11 +57,11 @@ def update_graph_live(n):
 
 
 if __name__ == '__main__':
-    # try:
-    #     ser.isOpen()
-    # except NameError:
-    #     config = serial_comm.load_config('config.toml')
-    #     ser = serial      _comm.serial_init(config)
+    try:
+        ser.isOpen()
+    except NameError:
+        config = serial_comm.load_config('../config.toml')
+        ser = serial_comm.serial_init(config)
     app.run_server(debug=True)
     # try:
     #     app.run(debug=True, dev_tools_ui=True, dev_tools_props_check=True)
