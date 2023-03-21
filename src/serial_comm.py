@@ -8,6 +8,7 @@ out_format = ''
 
 
 def load_config(config_file):
+    # TODO: docstring
     with open(config_file, mode="rb") as f:
         config = tomli.load(f)
     return config
@@ -38,17 +39,45 @@ def read_position_4(serial_port):
     Returns:
         position in default format
     """
-    # global out_format
-    # if out_format is 'CRC':
-    serial_port.write(b'Sb')
-    serial_port.flush()
-        # out_format = 'default'
+    global out_format
+    if out_format is not 'default':
+        # TODO: določi minimalen čas sleep-a
+        serial_port.write(b'Sb')  # Po ukazu nujno sleep, drugače ne prebere!
+        time.sleep(0.5)
+        serial_port.flush()
+        serial_port.reset_input_buffer()
+        serial_port.read_all()
+        out_format = 'default'
     serial_port.write(b'4')
     serial_port.flush()
     return serial_port.read_until(b'\r').decode('utf-8')
 
 
-def read_position_crc(serial_port, format):
+def read_position_formatted(serial_port):
+    # TODO: kako se sploh reče temu formatu???
+    """ Reads position in CRC format from given serial port
+
+    Args:
+        serial_port: From serial_init()
+
+    Returns:
+        position in multiturn:singleturn:warning:error format
+    """
+    global out_format
+    if out_format is not 'formatted':
+        serial_port.write(b'C22:00:20:1:1')  # Po ukazu nujno sleep, drugače ne prebere!
+        time.sleep(0.5)
+        serial_port.flush()
+        serial_port.reset_input_buffer()
+        serial_port.read_all()
+        out_format = 'formatted'
+    serial_port.write(b'>')
+    serial_port.flush()
+    return serial_port.read_until(b'\r').decode('utf-8')
+
+
+def read_position_crc(serial_port):
+    # TODO: kako se sploh reče temu formatu???
     """ Reads position in CRC format from given serial port
 
     Args:
@@ -58,13 +87,14 @@ def read_position_crc(serial_port, format):
         position in CRC format
     """
     global out_format
-    # if out_format is not 'CRC':
-    serial_port.write(format)
-    serial_port.flush()
-    serial_port.read_until(b'\r')
-        # out_format = 'CRC'
-
-    serial_port.write(b'>')
+    if out_format is not 'formatted':
+        serial_port.write(b'C22:00:20:1:1')  # Po ukazu nujno sleep, drugače ne prebere!
+        time.sleep(0.5)
+        serial_port.flush()
+        serial_port.reset_input_buffer()
+        serial_port.read_all()
+        out_format = 'formatted'
+    serial_port.write(b'4')
     serial_port.flush()
     return serial_port.read_until(b'\r').decode('utf-8')
 
@@ -74,11 +104,20 @@ def read_position_deg(serial_port, resolution):
 
     Args:
         serial_port: From serial_init()
+        resolution: encoder resolution
 
     Returns:
         Position in degrees
     """
-    pos_crc = read_position_crc(serial_port)
+    global out_format
+    if out_format is not 'CRC':
+        serial_port.write(b'Sb')  # Po ukazu nujno sleep, drugače ne prebere!
+        time.sleep(0.5)
+        serial_port.flush()
+        serial_port.reset_input_buffer()
+        serial_port.read_all()
+        out_format = 'default'
+    pos_crc = read_position_formatted(serial_port)
     try:
         pos_deg = int(pos_crc.split(':')[1], 16) * 360 / resolution
         return pos_deg
@@ -88,6 +127,7 @@ def read_position_deg(serial_port, resolution):
 
 
 def write_registers(serial_port, command_to_write, register_address_hex):
+    # TODO: docstring
     global out_format
     if out_format is not 'default':
         serial_port.write(b'Sb')  # Po ukazu nujno sleep, drugače ne prebere!
@@ -105,7 +145,27 @@ def write_registers(serial_port, command_to_write, register_address_hex):
     return serial_port.read_until(b'\r').decode('utf-8')
 
 
+def send_command(command, serial_port):
+    # TODO: docstring
+    """ Sends command string to serial port
+
+    Args:
+        command: Custom write string to send
+        serial_port: From serial_init()
+
+    Returns:
+        Reply from serial
+    """
+    serial_port.flush()
+    serial_port.reset_input_buffer()
+    serial_port.inWaiting()
+    serial_port.write(command.encode())
+    serial_port.flush()
+    return serial_port.read_until(b'\r').decode('utf-8')
+
+
 def read_registers(serial_port, number_of_registers_to_read, starting_register_address_hex):
+    # TODO: docstring
     global out_format
     if out_format is not 'default':
         serial_port.write(b'Sb')  # Po ukazu nujno sleep, drugače ne prebere!
@@ -123,28 +183,67 @@ def read_registers(serial_port, number_of_registers_to_read, starting_register_a
     return serial_port.read_until(b'\r').decode('utf-8')
 
 
+def calculate_ride_height(serial_port):
+    pass
+
+
+def crc_remainder(input_bitstring, polynomial_bitstring, initial_filler):
+    # TODO: docstring
+    # Shamelessly stolen from wikipedia
+    """ Calculate the CRC remainder of a string of bits using a chosen polynomial.
+    initial_filler should be '1' or '0'.
+    """
+    polynomial_bitstring = polynomial_bitstring.lstrip('0')  # remove leading zeroes of polynomial
+    len_input = len(input_bitstring)
+    initial_padding = (len(polynomial_bitstring) - 1) * initial_filler
+    input_padded_array = list(input_bitstring + initial_padding)
+    while '1' in input_padded_array[:len_input]:
+        cur_shift = input_padded_array.index('1')
+        for i in range(len(polynomial_bitstring)):
+            input_padded_array[cur_shift + i] = str(int(polynomial_bitstring[i] != input_padded_array[cur_shift + i]))
+    return ''.join(input_padded_array)[len_input:]
+
+
+def crc_check(input_bitstring, polynomial_bitstring, check_value):
+    # TODO: docstring
+    """Calculate the CRC check of a string of bits using a chosen polynomial.
+
+    """
+    polynomial_bitstring = polynomial_bitstring.lstrip('0')
+    len_input = len(input_bitstring)
+    initial_padding = check_value
+    input_padded_array = list(input_bitstring + initial_padding)
+    while '1' in input_padded_array[:len_input]:
+        cur_shift = input_padded_array.index('1')
+        for i in range(len(polynomial_bitstring)):
+            input_padded_array[cur_shift + i] = str(int(polynomial_bitstring[i] != input_padded_array[cur_shift + i]))
+    return ''.join(input_padded_array)[len_input:]
+
+
 def main():
     """ Loops something """
-    config = load_config(r'config.toml')
+    config = load_config(r'../config.toml')
     ser = serial_init(config)
     try:
+        send_command('Y', ser)
+        send_command('X', ser)
         i = 1
         while True:
             print(i, end=': ')
             default_values = {}
             # print(read_position_deg(ser, config['encoder']['RESOLUTION']))
-            # print(read_position_crc(ser, config['encoder']['CRC_FORMAT'].encode()))
+            # print(read_position_formatted()(ser, config['encoder']['CRC_FORMAT'].encode()))
             # out = read_registers(ser, 2, 0x7e)
 
             # prints dac output
-            for register in config['direct_access_registers']:
-                default_value = read_registers(ser, len(register['address']), int(register['address'][0], 16))
-                default_values[register['address'][0]] = default_value
-                time.sleep(0.1)
+            print(read_position_crc(ser))
+            time.sleep(0.5)
+            print(read_position_formatted(ser))
             i += 1
-            print(default_values)
-            break
-            # time.sleep(0.5)
+            # print(send_command('K', ser))
+
+            # break
+            time.sleep(2)
     finally:
         ser.close()
         print('Port closed')
