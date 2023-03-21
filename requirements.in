@@ -1,0 +1,7 @@
+pytest
+pyserial
+dash
+plotly
+tomli
+pandas
+numpy
