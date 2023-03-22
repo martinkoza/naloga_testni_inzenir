@@ -222,7 +222,10 @@ def crc_check(input_bitstring, polynomial_bitstring, check_value):
 
 def main():
     """ Loops something """
-    config = load_config(r'../config.toml')
+    try:
+        config = load_config(r'../config.toml')
+    except FileNotFoundError:
+        config = load_config(r'config.toml')
     ser = serial_init(config)
     try:
         send_command('Y', ser)
@@ -237,13 +240,13 @@ def main():
 
             # prints dac output
             print(read_position_crc(ser))
-            time.sleep(0.5)
+            time.sleep(0.1)
             print(read_position_formatted(ser))
             i += 1
             # print(send_command('K', ser))
 
             # break
-            time.sleep(2)
+            time.sleep(0.1)
     finally:
         ser.close()
         print('Port closed')

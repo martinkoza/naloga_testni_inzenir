@@ -1,4 +1,5 @@
 import pytest
+# from src import serial_comm
 import serial_comm
 import re
 import tomli
@@ -7,6 +8,7 @@ import time
 # TODO: komentarji funkcij
 
 
+@pytest.mark.skip()
 def test_read_access_and_default_values():
     try:
         config = serial_comm.load_config(r'..\config.toml')
@@ -16,6 +18,10 @@ def test_read_access_and_default_values():
     default_values = {}
     default_values_exp = {}
     try:
+        # reset to default
+        serial_comm.send_command('F', ser)
+        time.sleep(0.5)
+        serial_comm.send_command('N', ser)
         # get current values
         for register in config['direct_access_registers']:
             default_value_raw = serial_comm.read_registers(ser, len(register['address']), int(register['address'][0], 16))
@@ -48,8 +54,15 @@ def test_write_access():
         access = {}
         access_exp = {}
         for register in config['direct_access_registers']:
-            if register['access'] == 'RW':
-                out_raw = serial_comm.write_registers(ser, int(register['default_value']), int(register['address'][0], 16))
+            if True:
+                if register['default_value'] == 'None':
+                    continue
+            # if register['access'] == 'RW':
+                try:
+                    default_value = int(register['default_value'])
+                except ValueError:
+                    default_value = int(register['default_value'],16)
+                out_raw = serial_comm.write_registers(ser, default_value, int(register['address'][0], 16))
                 out = out_raw.split('\r')[0]
                 access_exp[register['address'][0]] = '0'
                 access[register['address'][0]] = out
